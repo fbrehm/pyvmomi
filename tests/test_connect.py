@@ -15,16 +15,22 @@
 
 import tests
 import unittest
+import sys
 
 from pyVim import connect
 from pyVmomi import vim
+
+if sys.version_info >= (3, 3):
+    from unittest.mock import patch, MagicMock
+else:
+    from mock import patch, MagicMock
 
 
 class ConnectionTests(tests.VCRTestBase):
 
     @tests.VCRTestBase.my_vcr.use_cassette('basic_connection.yaml',
                       cassette_library_dir=tests.fixtures_path,
-                      record_mode='none')
+                      record_mode='once', decode_compressed_response=True)
     def test_basic_connection(self):
         # see: http://python3porting.com/noconv.html
         si = connect.Connect(host='vcsa',
@@ -37,11 +43,11 @@ class ConnectionTests(tests.VCRTestBase):
         self.assertEqual(cookie, si._stub.cookie)
         # NOTE (hartsock): assertIsNotNone does not work in Python 2.6
         self.assertTrue(session_id is not None)
-        self.assertEqual('52b5395a-85c2-9902-7835-13a9b77e1fec', session_id)
+        self.assertEqual('5220f274-9ba1-a663-b51f-9b16fca182f1', session_id)
 
     @tests.VCRTestBase.my_vcr.use_cassette('sspi_connection.yaml',
                       cassette_library_dir=tests.fixtures_path,
-                      record_mode='none')
+                      record_mode='once')
     def test_sspi_connection(self):
         # see: http://python3porting.com/noconv.html
         si = connect.Connect(host='vcsa',
@@ -54,7 +60,7 @@ class ConnectionTests(tests.VCRTestBase):
         self.assertEqual(cookie, si._stub.cookie)
         # NOTE (hartsock): assertIsNotNone does not work in Python 2.6
         self.assertTrue(session_id is not None)
-        self.assertEqual('52b5395a-85c2-9902-7835-13a9b77e1fec', session_id)
+        self.assertEqual('5220f274-9ba1-a663-b51f-9b16fca182f1', session_id)
 
     @tests.VCRTestBase.my_vcr.use_cassette('basic_connection_bad_password.yaml',
                       cassette_library_dir=tests.fixtures_path,
@@ -69,7 +75,7 @@ class ConnectionTests(tests.VCRTestBase):
 
     @tests.VCRTestBase.my_vcr.use_cassette('smart_connection.yaml',
                       cassette_library_dir=tests.fixtures_path,
-                      record_mode='none')
+                      record_mode='once', decode_compressed_response=True)
     def test_smart_connection(self):
         # see: http://python3porting.com/noconv.html
         si = connect.SmartConnect(host='vcsa',
@@ -78,7 +84,7 @@ class ConnectionTests(tests.VCRTestBase):
         session_id = si.content.sessionManager.currentSession.key
         # NOTE (hartsock): assertIsNotNone does not work in Python 2.6
         self.assertTrue(session_id is not None)
-        self.assertEqual('52ad453a-13a7-e8af-9186-a1b5c5ab85b7', session_id)
+        self.assertEqual('52a67ed8-0f0b-1714-4534-86a177fc5158', session_id)
 
     def test_disconnect_on_no_connection(self):
         connect.Disconnect(None)
@@ -89,14 +95,41 @@ class ConnectionTests(tests.VCRTestBase):
     def test_ssl_tunnel(self):
         connect.SoapStubAdapter('sdkTunnel', 8089, httpProxyHost='vcsa').GetConnection()
 
-    @tests.VCRTestBase.my_vcr.use_cassette('ssl_tunnel_http_failure.yaml',
+    def test_ssl_tunnel_http_failure(self):
+        import socket
+        def should_fail():
+            conn = connect.SoapStubAdapter('vcsa', 80, httpProxyHost='unreachable').GetConnection()
+            conn.request('GET', '/')
+            conn.getresponse()
+        self.assertRaises((OSError, socket.gaierror), should_fail)
+
+    @tests.VCRTestBase.my_vcr.use_cassette('ssl_tunnel.yaml',
                       cassette_library_dir=tests.fixtures_path,
                       record_mode='none')
-    def test_ssl_tunnel_http_failure(self):
-        from six.moves import http_client
-        def should_fail():
-            connect.SoapStubAdapter('vcsa', 80, httpProxyHost='vcsa').GetConnection()
-        self.assertRaises(http_client.HTTPException, should_fail)
+    def test_http_proxy(self):
+        connect.SoapStubAdapter('sdkTunnel', 8089, httpProxyHost='vcsa').GetConnection()
+
+    @patch('six.moves.http_client.HTTPSConnection')
+    def test_http_proxy_with_cert_file(self, hs):
+        conn = connect.SoapStubAdapter(
+            'sdkTunnel', 8089, httpProxyHost='vcsa',
+            certKeyFile='my_key_file', certFile='my_cert_file').GetConnection()
+        conn.request('GET', '/')
+        hs.assert_called_once_with('vcsa:80', cert_file='my_cert_file', key_file='my_key_file')
+        conn.set_tunnel.assert_called_once_with('sdkTunnel:8089', headers={})
+
+    @tests.VCRTestBase.my_vcr.use_cassette('http_proxy.yaml',
+                      cassette_library_dir=tests.fixtures_path,
+                      record_mode='once')
+    def test_http_proxy(self):
+        conn = connect.SoapStubAdapter(
+            'vcenter.test', httpProxyHost='my-http-proxy',
+            httpProxyPort=8080).GetConnection()
+        self.assertEqual(conn._tunnel_host, 'vcenter.test')
+        self.assertEqual(conn._tunnel_port, 443)
+        conn.request('GET', '/')
+        conn.getresponse()
+
 
 if __name__ == '__main__':
     unittest.main()

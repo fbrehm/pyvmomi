@@ -1,34 +1,40 @@
-.. image:: https://travis-ci.org/vmware/pyvmomi.svg?branch=v6.0.0.2016.4
-    :target: https://travis-ci.org/vmware/pyvmomi
-    :alt: Build Status
-
-.. image:: https://img.shields.io/pypi/dm/pyvmomi.svg
+pyvmomi
+------------
+.. |downloads| image:: https://img.shields.io/pypi/dm/pyvmomi.svg
     :target: https://pypi.python.org/pypi/pyvmomi/
-    :alt: Downloads
+.. |py-version| image:: https://img.shields.io/pypi/pyversions/pyVmomi
 
-pyVmomi is the Python SDK for the VMware vSphere API that allows you to manage 
-ESX, ESXi, and vCenter.
+|downloads| |py-version|
+
+pyVmomi is the Python SDK for the VMware vSphere Management API that allows you to rapidly build solutions integrated with VMware ESXi and vCenter Server.
+For accessing features from the `vSphere Automation APIs <https://developer.vmware.com/apis/vsphere-automation/latest/>`_
+(REST), please refer to the `VMware vSphere Automation SDK for Python <https://github.com/vmware/vsphere-automation-sdk-python/>`_.
+
+.. contents:: Table of Contents
+   :depth: 1
+   :local:
+   :backlinks: none
 
 Getting Started
 ================
-To get started, see the `getting started guide <http://vmware.github.io/pyvmomi-community-samples/#getting-started>`_. You'll need `Python <https://www.python.org/downloads/>`_, `pip <https://pip.pypa.io/en/latest/installing.html#using-package-managers>`_, and the `samples project <https://github.com/vmware/pyvmomi-community-samples/tarball/master>`_.
-
-* http://vmware.github.io/pyvmomi-community-samples/
-* community discussion on IRC freenode.net channels `#pyvmomi and #pyvmomi-dev <http://webchat.freenode.net/?channels=#pyvmomi,#pyvmomi-dev>`_
-* community email is on `nabble <http://pyvmomi.2338814.n4.nabble.com>`_
-
-Don't know what pip is? Any serious python developer should know, so here's a `throrough intro to pip <http://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/>`_ that we like.
+To get started, see the
+`getting started guide <http://vmware.github.io/pyvmomi-community-samples/#getting-started>`_.
+You'll need `Python <https://www.python.org/downloads/>`_,
+`pip <https://pip.pypa.io/en/latest/installation/>`_, and the
+`samples project <http://vmware.github.io/pyvmomi-community-samples/>`_.
 
 Installing
 ==========
-The master is code that is in development, official releases are tagged and 
+The master is code that is in development, official releases are tagged and
 posted to `pypi <https://pypi.python.org/pypi/pyvmomi/>`_
 
-* The official release is available using pip, just run 
-  ``pip install --upgrade pyvmomi``. 
-* To install the version in `github <https://github.com/vmware/pyvmomi>`_ use 
-  ``python setup.py develop`` for development install or 
-  ``python setup.py install``. 
+* The official release is available using pip, just run
+  ``pip install --upgrade pyvmomi``.
+* To install the version in `github <https://github.com/vmware/pyvmomi>`_ use
+  ``python setup.py develop`` for development install or
+  ``python setup.py install``.
+* To install `github's version <https://github.com/vmware/pyvmomi>`_ with sso support, just run
+  ``pip install -e ".[sso]"`` inside project's home folder.
 
 Testing
 =======
@@ -42,40 +48,46 @@ Contributing
 ============
 * Research `open issues <https://github.com/vmware/pyvmomi/issues?q=is%3Aopen+is%3Aissue>`_
 * Follow the `contribution standards <https://github.com/vmware/pyvmomi/wiki/Contributions>`_
-* Coordinate with `other developers <http://webchat.freenode.net/?channels=#pyvmomi,#pyvmomi-dev>`_ on the project.
 
 Documentation
 =============
-For general language neutral documentation of vSphere Management API see: 
+For general language neutral documentation of vSphere Management API see:
 
-* `vSphere WS SDK API Docs <https://vdc-download.vmware.com/vmwb-repository/dcr-public/6b586ed2-655c-49d9-9029-bc416323cb22/fa0b429a-a695-4c11-b7d2-2cbc284049dc/doc/index.html>`_
+* `vSphere Web Services API Doc <https://code.vmware.com/apis/1720/vsphere>`_
 
 Python Support
 ==============
-* pyVmomi 6.7.1 supports 2.7, 3.3, 3.4, 3.5 & 3.6
-* pyVmomi 6.7 supports 2.7, 3.3, 3.4, 3.5 & 3.6
-* pyVmomi 6.5 supports 2.7, 3.3, 3.4 and 3.5
-* pyVmomi 6.0.0.2016.4 and later support 2.7, 3.3 and 3.4
-* pyVmomi 6.0.0 and later support 2.7, 3.3 and 3.4
-* pyVmomi 5.5.0-2014.1 and 5.5.0-2014.1.1 support Python 2.6, 2.7, 3.3 and 3.4
-* pyVmomi 5.5.0 and below support Python 2.6 and 2.7
+* pyVmomi supports Python 3.4+
+
+Versioning
+====================
+pyVmomi: **X.Y.Z.U.P**
+
+vCenter-related:
+**X.Y** - (Major release), **Z** - (Update release), **U** - (Patch)
+
+pyVmomi-related:
+**P** - (pyVmomi patches)
 
 Compatibility Policy
 ====================
-pyVmomi versions are marked vSphere_version-release . Pyvmomi maintains minimum 
-backward compatibility with the previous _four_ releases of *vSphere* and it's 
-own previous four releases. Compatibility with much older versions may continue 
-to work but will not be actively supported.
+pyVmomi maintains minimum backward compatibility with the previous
+*four* releases of *vSphere* and it's own previous four releases.
+Compatibility with much older versions may continue to work but will
+not be actively supported.
 
 For example, version v6.0.0 is most compatible with vSphere 6.0, 5.5, 5.1 and
 5.0. Initial releases compatible with a version of vSphere will bare a naked
 version number of v6.0.0 indicating that version of pyVmomi was released
 simultaneously with the *GA* version of vSphere with the same version number.
 
+Support
+====================
+For official support, users with 'Active - Premium SDK Support, Standard SDK Support, Premier/Success 360, and `VMware Select Support <https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/docs/vmware-select-support-specific-program-document.pdf>`_ can reach out to `VMware Global Support <https://kb.vmware.com/s/article/87265?lang=en_US>`_ for any issues in line with our `SDK and API Support policy <https://www.vmware.com/support/services/sdk.html>`_. For community support, please open a `Github issue <https://github.com/vmware/pyvmomi/issues>`_ or start a `Discussion <https://github.com/vmware/pyvmomi/discussions>`_.
+
 Related Projects
 ================
-* VMware vSphere Automation SDK for Python: https://developercenter.vmware.com/web/sdk/65/vsphere-automation-python
+* VMware vSphere Automation SDK for Python: https://github.com/vmware/vsphere-automation-sdk-python
 * Samples Project: https://github.com/vmware/pyvmomi-community-samples
-* Feature Incubator: pyvmomi-tools https://github.com/vmware/pyvmomi-tools
 
 Have fun!
